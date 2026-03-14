@@ -17,7 +17,6 @@ export const InvestmentsView = () => {
     data: investments,
     isLoading,
     isError,
-    error,
   } = useUserInvestments();
 
   if (!walletAddress) {
@@ -37,6 +36,10 @@ export const InvestmentsView = () => {
     );
   }
 
+  // Sin backend de investments por wallet: mostrar vista normal con lista vacía
+  // en lugar de error (401 o endpoint inexistente)
+  const investmentList = isError ? [] : (investments ?? []);
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -47,21 +50,6 @@ export const InvestmentsView = () => {
       </div>
     );
   }
-
-  if (isError) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto text-center space-y-6">
-          <h2 className="text-2xl font-bold">My Investments</h2>
-          <p className="text-destructive">
-            Error loading investments: {error instanceof Error ? error.message : "Unknown error"}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const investmentList = investments ?? [];
 
   const totalInvested = React.useMemo(() => {
     return investmentList.reduce((sum, inv) => sum + Number(inv.usdcAmount), 0);
